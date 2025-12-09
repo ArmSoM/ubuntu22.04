@@ -315,6 +315,7 @@ echo -e "\033[47;36m ------- Custom Script ------- \033[0m"
 systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 systemctl disable hostapd
+systemctl enable wifibt-init
 rm /lib/systemd/system/wpa_supplicant@.service
 
 echo -e "\033[47;36m  ---------- Clean ----------- \033[0m"
