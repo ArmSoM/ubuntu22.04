@@ -214,7 +214,7 @@ apt purge initramfs-tools -y
 
 \${APT_INSTALL} dialog toilet u-boot-tools edid-decode logrotate fdisk
 if [[ "$TARGET" == "gnome" || "$TARGET" == "gnome-full" ]]; then
-    \${APT_INSTALL} gdisk
+    \${APT_INSTALL} gdisk blueman
     #Desktop background picture
     ln -sf /usr/share/xfce4/backdrops/armsom-wallpaper.png /usr/share/backgrounds/warty-final-ubuntu.png
 elif [[ "$TARGET" == "xfce" || "$TARGET" == "xfce-full" ]]; then
