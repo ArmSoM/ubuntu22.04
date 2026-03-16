@@ -338,6 +338,10 @@ then
     rm /etc/profile.d/qt.sh
 fi
 
+// fix: MACAddressPolicy 
+truncate -s 0 /etc/machine-id
+truncate -s 0 /var/lib/dbus/machine-id 2>/dev/null || true
+
 rm -rf /home/$(whoami)
 rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/
