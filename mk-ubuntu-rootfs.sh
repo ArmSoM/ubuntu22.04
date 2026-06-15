@@ -316,6 +316,7 @@ systemctl mask systemd-networkd-wait-online.service
 systemctl mask NetworkManager-wait-online.service
 systemctl disable hostapd
 systemctl enable wifibt-init
+systemctl enable mxa-manager.service
 rm /lib/systemd/system/wpa_supplicant@.service
 
 echo -e "\033[47;36m  ---------- Clean ----------- \033[0m"
@@ -341,6 +342,15 @@ fi
 // fix: MACAddressPolicy 
 truncate -s 0 /etc/machine-id
 truncate -s 0 /var/lib/dbus/machine-id 2>/dev/null || true
+
+
+# 自动化创建 mxa-manager 系统用户
+if ! id "mxa-manager" &>/dev/null; then
+    useradd --system --no-create-home --shell /usr/sbin/nologin mxa-manager
+    echo "系统用户 mxa-manager 创建成功。"
+else
+    echo "提示：用户 mxa-manager 已经存在。"
+fi
 
 rm -rf /home/$(whoami)
 rm -rf /var/lib/apt/lists/*
