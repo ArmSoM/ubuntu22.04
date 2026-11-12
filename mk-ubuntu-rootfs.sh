@@ -314,6 +314,21 @@ fi
 
 apt autoremove -y
 
+# ArmSoM server images: expose the local text login on the display.
+# This block runs inside the image chroot, never on the build host.
+if [ "$TARGET" = server ]; then
+    \${APT_INSTALL} kbd || exit 1
+    systemctl set-default multi-user.target || exit 1
+    systemctl mask bootanim.service || exit 1
+    systemctl unmask getty@tty1.service || exit 1
+    systemctl enable getty@tty1.service || exit 1
+    chvt_path=\$(command -v chvt) || exit 1
+    mkdir -p /etc/systemd/system/getty@tty1.service.d || exit 1
+    printf '%s\n' '[Service]' 'TTYVTDisallocate=yes' \
+        "ExecStartPre=-\${chvt_path} 1" \
+        > /etc/systemd/system/getty@tty1.service.d/armsom-server-console.conf || exit 1
+fi
+
 # mark package to hold
 apt list --upgradable | cut -d/ -f1 | xargs apt-mark hold
 
