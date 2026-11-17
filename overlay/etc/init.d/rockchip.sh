@@ -167,8 +167,7 @@ if [ -e /usr/lib/aarch64-linux-gnu/ ]; then
     ln -Tsf lib /usr/lib64
 fi
 
-# sync system time
-hwclock --systohc || echo "Warning: RTC clock update failed; continuing boot" >&2
+# Do not write an unsynchronized startup clock into the RTC.
 
 }
 

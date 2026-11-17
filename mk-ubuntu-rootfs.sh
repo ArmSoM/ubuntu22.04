@@ -203,7 +203,10 @@ fi
 
 export LC_ALL=C.UTF-8
 
-apt-get update
+# Avoid long APT stalls; retain normal signature, TLS and date checks.
+printf '%s\n' 'Acquire::http::Timeout "15";' 'Acquire::https::Timeout "15";' \
+    'Acquire::Retries "1";' > /etc/apt/apt.conf.d/80armsom-network
+apt-get -o APT::Update::Error-Mode=any update || exit 1
 apt-get upgrade -y
 
 chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
@@ -328,6 +331,21 @@ if [ "$TARGET" = server ]; then
         "ExecStartPre=-\${chvt_path} 1" \
         > /etc/systemd/system/getty@tty1.service.d/armsom-server-console.conf || exit 1
 fi
+
+# Use the distro time client on both new and cached base rootfs tarballs.
+\${APT_INSTALL} --purge systemd-timesyncd || exit 1
+systemctl unmask systemd-timesyncd.service || exit 1
+systemctl enable systemd-timesyncd.service || exit 1
+mkdir -p /usr/lib/systemd/timesyncd.conf.d || exit 1
+printf '%s\n' '[Time]' 'NTP=ntp.aliyun.com time.cloudflare.com ntp.ubuntu.com' \
+    > /usr/lib/systemd/timesyncd.conf.d/20-armsom.conf || exit 1
+ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+printf '%s\n' Asia/Shanghai > /etc/timezone
+
+# The vendor packages above are installed locally; keep remote feeds opt-in.
+for source in /etc/apt/sources.list.d/embedfire-lbc.list /etc/apt/sources.list.d/embedfire-$MIRROR.list; do
+    [ ! -f "\$source" ] || mv "\$source" "\$source.disabled"
+done
 
 # mark package to hold
 apt list --upgradable | cut -d/ -f1 | xargs apt-mark hold
