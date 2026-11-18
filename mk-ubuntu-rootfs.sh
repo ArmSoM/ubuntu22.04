@@ -276,6 +276,9 @@ elif [[ "$TARGET" == "xfce" || "$TARGET" == "xfce-full" ]]; then
 fi
 
 if [[ "$TARGET" == "gnome" ||  "$TARGET" == "xfce" || "$TARGET" == "gnome-full" || "$TARGET" == "xfce-full" ]]; then
+    if [ "$SOC" = "rk3528" ]; then
+        \${APT_INSTALL} /packages/xserver/utgard-450/armsom-rk3528-glamor_1.0_arm64.deb || exit 1
+    fi
     echo -e "\033[47;36m ----- Install Camera ------- \033[0m"
     \${APT_INSTALL} cheese v4l-utils
 
